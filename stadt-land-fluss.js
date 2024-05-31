@@ -1,6 +1,9 @@
 const ANIMATION_TIME = 500;
+const COUNTDOWN_TIME = 10;
 const ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 const buchstabe = document.getElementById('buchstabe');
+const countdown = document.getElementById('countdown');
+const countdownButton = document.getElementById('countdown-button');
 const used = document.getElementById('used');
 
 localStorage.removeItem('usedLetters');
@@ -18,7 +21,26 @@ const shuffle = (array) => {
   return array;
 };
 
+let interval;
+
+countdownButton.onclick = () => {
+  clearInterval(interval);
+  countdown.innerHTML = COUNTDOWN_TIME;
+
+  let timer = COUNTDOWN_TIME, seconds = 0;
+  interval = setInterval(function () {
+      countdown.innerHTML = timer - 1;
+
+      if (--timer <= 0) {
+          clearInterval(interval);
+          countdown.innerHTML = "Time's up!";
+      }
+  }, 1000);
+
+}
+
 buchstabe.onclick = () => {
+  countdown.innerHTML = "";
   const usedLetters = JSON.parse(localStorage.getItem('usedLetters')) || [];
 
   const alphabet = shuffle(ALPHABET.filter(letter => !usedLetters.includes(letter)));
@@ -48,6 +70,7 @@ buchstabe.onclick = () => {
 
     setTimeout(() => {
       used.innerHTML = usedLetters.join(' ');
+      countdownButton.style.display = "block";
     }, ANIMATION_TIME);
   }
 }

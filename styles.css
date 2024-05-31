@@ -25,10 +25,23 @@ body {
   text-align: center;
 }
 
-#reset {
+#countdown-button {
   position: fixed;
   right: 15px;
   top: 15px;
+  display: none;
+}
+
+#countdown-button.show {
+  display: block;
+}
+
+#countdown {
+  font-size: 60px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 100px;
 }
 
 #buchstabe {
