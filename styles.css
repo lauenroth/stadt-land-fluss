@@ -25,10 +25,23 @@ body {
   text-align: center;
 }
 
+svg {
+  background-color: var(--color-deep-blue);
+  fill: var(--color-blueish-white);
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  color: var(--color-blueish-white);
+}
+
 #countdown-button {
   position: fixed;
-  right: 15px;
-  top: 15px;
+  left: 10px;
+  top: 10px;
+  height: 50px;
+  width: 50px;
   display: none;
 }
 
@@ -36,18 +49,23 @@ body {
   display: block;
 }
 
+#toggle-menu {
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  height: 50px;
+  width: 50px;
+}
+
 #countdown {
   font-size: 60px;
   position: fixed;
   left: 0;
   right: 0;
-  top: 100px;
+  bottom: 100px;
 }
 
 #buchstabe {
-  background-color: transparent;
-  border: none;
-  color: var(--color-blueish-white);
   height: calc(100dvh - 80px);
   font-size: 150px;
   font-weight: bold;
