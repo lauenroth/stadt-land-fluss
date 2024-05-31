@@ -40,6 +40,7 @@ countdownButton.onclick = () => {
 }
 
 buchstabe.onclick = () => {
+  buchstabe.classList.add("started");
   countdown.innerHTML = "";
   const usedLetters = JSON.parse(localStorage.getItem('usedLetters')) || [];
 

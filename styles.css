@@ -52,6 +52,9 @@ body {
   font-size: 150px;
   font-weight: bold;
 }
+#buchstabe.started {
+  font-size: 200px;
+}
 
 #used {
   margin: 0 0 15px;
