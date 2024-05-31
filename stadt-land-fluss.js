@@ -5,6 +5,7 @@ const buchstabe = document.getElementById('buchstabe');
 const countdown = document.getElementById('countdown');
 const countdownButton = document.getElementById('countdown-button');
 const used = document.getElementById('used');
+const menuButton = document.getElementById('toggle-menu');
 
 localStorage.removeItem('usedLetters');
 
@@ -21,7 +22,22 @@ const shuffle = (array) => {
   return array;
 };
 
-let interval;
+document.querySelectorAll('.countdown').forEach(countdownTime => {
+  countdownTime.onclick = () => {
+    document.querySelectorAll('.countdown').forEach(button => button.classList.remove('active'));
+    countdownTime.classList.add('active');
+  }
+});
+
+document.querySelectorAll('.letter').forEach(letter => {
+  letter.onclick = () => {
+    letter.classList.toggle('active');
+  }
+});
+
+menuButton.onclick = () => {
+  document.body.classList.toggle('show-menu');
+}
 
 countdownButton.onclick = () => {
   clearInterval(interval);
@@ -39,8 +55,10 @@ countdownButton.onclick = () => {
 
 }
 
+let interval;
 buchstabe.onclick = () => {
   buchstabe.classList.add("started");
+  clearInterval(interval);
   countdown.innerHTML = "";
   const usedLetters = JSON.parse(localStorage.getItem('usedLetters')) || [];
 
