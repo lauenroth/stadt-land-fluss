@@ -4,6 +4,7 @@
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#081235",
+  "theme_color": "#081235",
   "description": "Generates random letters from the alphabet",
   "orientation": "portrait",
   "icons": [
