@@ -4,6 +4,7 @@
   --color-deep-blue-opacity: rgba(0, 10, 40, 1);
   --color-digital-blue: #1b31ff;
   --color-bright-green: #a7ff71;
+  --color-border: #89A;
   --color-warm-purple: #9c73f3;
 }
 
@@ -97,19 +98,28 @@ aside {
   left: 0;
   padding: 15px;
   position: fixed;
-  /* height: calc(100dvh - 100px); */
   transition: bottom 0.25s ease-out;
   right: 0;
 }
 
 hr {
-  background-color: var(--color-warm-purple);
-  margin: 20px 0 40px;
+  border: none;
+  background-color: var(--color-border);
+  height: 1px;
+  margin: 20px 0 30px;
   width: 100%;
 }
 
 .show-menu aside {
   bottom: 0;
+}
+
+aside {
+  border-top: 1px solid var(--color-border);
+}
+
+aside label {
+  font-size: 22px;
 }
 
 aside button {
@@ -120,18 +130,41 @@ aside button {
   min-width: 50px;
 }
 
-aside button.active {
+aside button.active,
+aside button.disabled {
   background-color: var(--color-bright-green);
   color: var(--color-deep-blue);
+  position: relative;
+}
+
+aside button::after {
+  background-color: var(--color-deep-blue);;
+  content: '';
+  display: block;
+  height: 2px;
+  left: 0;
+  opacity: .5;
+  position: absolute;
+  top: 50px;
+  transform: rotate(-45deg);
+  transition: 0.25s ease-out;
+  width: 0;
+}
+
+aside button.disabled::after {
+  left: -9px;
+  top: 24px;
+  width: 68px;
 }
 
 .buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin: 0 0 40px;
 }
 
 label {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }

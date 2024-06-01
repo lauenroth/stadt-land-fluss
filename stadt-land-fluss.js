@@ -1,5 +1,5 @@
 const ANIMATION_TIME = 500;
-const COUNTDOWN_TIME = 10;
+const COUNTDOWN_TIME = 60;
 const ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 const buchstabe = document.getElementById('buchstabe');
 const countdown = document.getElementById('countdown');
@@ -22,6 +22,13 @@ const shuffle = (array) => {
   return array;
 };
 
+const reset = () => {
+  buchstabe.classList.remove("started");
+  localStorage.removeItem('usedLetters');
+  used.innerHTML = '';
+  buchstabe.innerHTML = 'Go';
+}
+
 document.querySelectorAll('.countdown').forEach(countdownTime => {
   countdownTime.onclick = () => {
     document.querySelectorAll('.countdown').forEach(button => button.classList.remove('active'));
@@ -31,7 +38,7 @@ document.querySelectorAll('.countdown').forEach(countdownTime => {
 
 document.querySelectorAll('.letter').forEach(letter => {
   letter.onclick = () => {
-    letter.classList.toggle('active');
+    letter.classList.toggle('disabled');
   }
 });
 
@@ -91,5 +98,7 @@ buchstabe.onclick = () => {
       used.innerHTML = usedLetters.join(' ');
       countdownButton.style.display = "block";
     }, ANIMATION_TIME);
+  } else {
+    reset();
   }
 }
