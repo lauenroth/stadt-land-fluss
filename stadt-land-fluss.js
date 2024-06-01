@@ -1,13 +1,15 @@
 const ANIMATION_TIME = 500;
-const COUNTDOWN_TIME = 60;
 const ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+const ANIMATION_LETTERS = ['A', 'W', 'S', 'T', 'F', 'K', 'N', '0', 'D', 'L'];
 const buchstabe = document.getElementById('buchstabe');
 const countdown = document.getElementById('countdown');
 const countdownButton = document.getElementById('countdown-button');
 const used = document.getElementById('used');
 const menuButton = document.getElementById('toggle-menu');
 
+// initialize
 localStorage.removeItem('usedLetters');
+
 
 const shuffle = (array) => {
   let count = array.length,
@@ -30,9 +32,17 @@ const reset = () => {
 }
 
 document.querySelectorAll('.countdown').forEach(countdownTime => {
+  if (countdownTime.innerHTML === localStorage.getItem('timer')) {
+    countdownTime.classList.add('active');
+  }
+
   countdownTime.onclick = () => {
+    countdownButton.style.display = 'none';
     document.querySelectorAll('.countdown').forEach(button => button.classList.remove('active'));
     countdownTime.classList.add('active');
+    localStorage.setItem('timer', countdownTime.innerHTML)
+    clearInterval(interval);
+    countdown.innerHTML = '';
   }
 });
 
@@ -47,10 +57,11 @@ menuButton.onclick = () => {
 }
 
 countdownButton.onclick = () => {
+  const countdownTime = localStorage.getItem('timer')
   clearInterval(interval);
-  countdown.innerHTML = COUNTDOWN_TIME;
+  countdown.innerHTML = countdownTime;
 
-  let timer = COUNTDOWN_TIME, seconds = 0;
+  let timer = countdownTime;
   interval = setInterval(function () {
       countdown.innerHTML = timer - 1;
 
@@ -82,11 +93,13 @@ buchstabe.onclick = () => {
         startTimestamp = timestamp;
       }
       const progress = Math.min((timestamp - startTimestamp) / ANIMATION_TIME, 1);
-      const letterIndex = Math.floor(progress * (alphabet.length - 1) + 1);
-      buchstabe.innerHTML = alphabet[letterIndex - 1];
+      const letterIndex = Math.floor(progress * (ANIMATION_LETTERS.length - 1) + 1);
+      buchstabe.innerHTML = ANIMATION_LETTERS[letterIndex - 1];
 
       if (progress < 1) {
         window.requestAnimationFrame(step);
+      } else {
+        buchstabe.innerHTML = nextLetter;
       }
     };
     window.requestAnimationFrame(step);
@@ -96,7 +109,10 @@ buchstabe.onclick = () => {
 
     setTimeout(() => {
       used.innerHTML = usedLetters.join(' ');
-      countdownButton.style.display = "block";
+
+      if (localStorage.getItem('timer') > 0) {
+        countdownButton.style.display = "block";
+      }
     }, ANIMATION_TIME);
   } else {
     reset();
