@@ -39,8 +39,9 @@ resetButton.onclick = () => {
   document.body.classList.remove('show-menu');
 };
 
+const selectedTimer = localStorage.getItem('timer') || '0';
 document.querySelectorAll('.countdown').forEach(countdownTime => {
-  if (countdownTime.innerHTML === localStorage.getItem('timer')) {
+  if (countdownTime.innerHTML === selectedTimer) {
     countdownTime.classList.add('active');
   }
 
