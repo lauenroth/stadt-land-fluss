@@ -1,14 +1,17 @@
 const ANIMATION_TIME = 500;
 const ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-const ANIMATION_LETTERS = ['A', 'W', 'S', 'T', 'F', 'K', 'N', '0', 'D', 'L'];
+const ANIMATION_LETTERS = ['A', 'U', 'S', 'T', 'F', 'K', 'N', '0', 'D', 'L', 'M', 'B', 'H'];
 const buchstabe = document.getElementById('buchstabe');
 const countdown = document.getElementById('countdown');
 const countdownButton = document.getElementById('countdown-button');
 const used = document.getElementById('used');
 const menuButton = document.getElementById('toggle-menu');
+const menu = document.getElementById('menu');
+const resetButton = document.getElementById('reset');
 
 // initialize
 localStorage.removeItem('usedLetters');
+document.querySelector('form').onclick = event => event.stopPropagation();
 
 
 const shuffle = (array) => {
@@ -31,29 +34,54 @@ const reset = () => {
   buchstabe.innerHTML = 'Go';
 }
 
+resetButton.onclick = () => {
+  reset();
+  document.body.classList.remove('show-menu');
+};
+
 document.querySelectorAll('.countdown').forEach(countdownTime => {
   if (countdownTime.innerHTML === localStorage.getItem('timer')) {
     countdownTime.classList.add('active');
   }
 
   countdownTime.onclick = () => {
-    countdownButton.style.display = 'none';
+    const timer = countdownTime.innerHTML;
+    countdownButton.style.opacity = timer === '0' ? 0 : 1;
     document.querySelectorAll('.countdown').forEach(button => button.classList.remove('active'));
     countdownTime.classList.add('active');
-    localStorage.setItem('timer', countdownTime.innerHTML)
+    localStorage.setItem('timer', timer)
     clearInterval(interval);
     countdown.innerHTML = '';
   }
 });
 
+const excludedLetters = JSON.parse(localStorage.getItem('excludedLetters')) || [];
 document.querySelectorAll('.letter').forEach(letter => {
+
+  if (excludedLetters.indexOf(letter.innerHTML) !== -1) {
+    letter.classList.add('disabled');
+  }
+
   letter.onclick = () => {
     letter.classList.toggle('disabled');
+
+    const indexOfLetter = excludedLetters.indexOf(letter.innerHTML);
+
+    if (indexOfLetter === -1) {
+      excludedLetters.push(letter.innerHTML);
+    } else {
+      excludedLetters.splice(indexOfLetter, 1);
+    }
+    localStorage.setItem('excludedLetters', JSON.stringify(excludedLetters));
   }
 });
 
 menuButton.onclick = () => {
-  document.body.classList.toggle('show-menu');
+  document.body.classList.add('show-menu');
+}
+
+menu.onclick = () => {
+  document.body.classList.remove('show-menu');
 }
 
 countdownButton.onclick = () => {
@@ -79,8 +107,9 @@ buchstabe.onclick = () => {
   clearInterval(interval);
   countdown.innerHTML = "";
   const usedLetters = JSON.parse(localStorage.getItem('usedLetters')) || [];
+  const excludedLetters = JSON.parse(localStorage.getItem('excludedLetters')) || [];
 
-  const alphabet = shuffle(ALPHABET.filter(letter => !usedLetters.includes(letter)));
+  const alphabet = shuffle(ALPHABET.filter(letter => !usedLetters.includes(letter) && !excludedLetters.includes(letter)));
 
   if (alphabet.length > 0) {
 
@@ -111,7 +140,7 @@ buchstabe.onclick = () => {
       used.innerHTML = usedLetters.join(' ');
 
       if (localStorage.getItem('timer') > 0) {
-        countdownButton.style.display = "block";
+        countdownButton.style.opacity = 1;
       }
     }, ANIMATION_TIME);
   } else {

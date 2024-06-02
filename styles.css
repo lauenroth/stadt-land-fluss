@@ -52,8 +52,9 @@ button {
   left: 10px;
   top: 10px;
   height: 50px;
+  opacity: 0;
+  transition: opacity .25s;
   width: 50px;
-  display: none;
 }
 
 #countdown-button.show {
@@ -91,12 +92,12 @@ button {
 }
 
 aside {
-  background-color: var(--color-deep-blue-opacity);
+  /* background-color: rgba(255, 255, 255, 0.1); */
   bottom: -100dvh;
   display: flex;
-  flex-direction: column;
+  align-items: flex-end;
   left: 0;
-  padding: 15px;
+  height: 100dvh;
   position: fixed;
   transition: bottom 0.25s ease-out;
   right: 0;
@@ -114,8 +115,10 @@ hr {
   bottom: 0;
 }
 
-aside {
+form {
+  background-color: var(--color-deep-blue-opacity);
   border-top: 1px solid var(--color-border);
+  padding: 15px;
 }
 
 aside label {
