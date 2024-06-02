@@ -97,7 +97,6 @@ countdownButton.onclick = () => {
       if (--timer <= 0) {
           clearInterval(interval);
           countdown.innerHTML = "Time's up!";
-          navigator.vibrate(200);
       }
   }, 1000);
 
