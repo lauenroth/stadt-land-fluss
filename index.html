@@ -53,7 +53,7 @@
           <button type="button" class="countdown">90</button>
         </p>
 
-        <label for="skip-letters">Skip these letters</label>
+        <label for="skip-letters">Skip the following letters</label>
         <p class="buttons">
           <button type="button" class="letter">A</button>
           <button type="button" class="letter">B</button>
@@ -90,5 +90,19 @@
       </form>
     </aside>
     <script type="text/javascript" src="stadt-land-fluss.js"></script>
+    <script>
+      // Register service worker for offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+              console.log('Service Worker registered successfully:', registration.scope);
+            })
+            .catch(error => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

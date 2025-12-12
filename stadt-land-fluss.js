@@ -32,6 +32,7 @@ const reset = () => {
   localStorage.removeItem('usedLetters');
   used.innerHTML = '';
   buchstabe.innerHTML = 'Go';
+  
 }
 
 resetButton.onclick = () => {
@@ -51,8 +52,7 @@ document.querySelectorAll('.countdown').forEach(countdownTime => {
     document.querySelectorAll('.countdown').forEach(button => button.classList.remove('active'));
     countdownTime.classList.add('active');
     localStorage.setItem('timer', timer)
-    clearInterval(interval);
-    countdown.innerHTML = '';
+    resetTimer();
   }
 });
 
@@ -102,11 +102,15 @@ countdownButton.onclick = () => {
 
 }
 
+const resetTimer = () => {
+  clearInterval(interval);
+  countdown.innerHTML = '';
+}
+
 let interval;
 buchstabe.onclick = () => {
   buchstabe.classList.add("started");
-  clearInterval(interval);
-  countdown.innerHTML = "";
+  resetTimer();
   const usedLetters = JSON.parse(localStorage.getItem('usedLetters')) || [];
   const excludedLetters = JSON.parse(localStorage.getItem('excludedLetters')) || [];
 
