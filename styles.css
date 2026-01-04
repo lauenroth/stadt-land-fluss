@@ -91,7 +91,7 @@ button {
 
 #word-button {
   height: calc(100dvh - 100px);
-  font-size: 60px;
+  font-size: 150px;
   font-weight: bold;
   padding: 0 20px;
   word-break: break-word;
