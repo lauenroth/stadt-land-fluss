@@ -12,6 +12,12 @@
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
   </head>
   <body>
+    <!-- Navigation Tabs -->
+    <nav id="tabs">
+      <button type="button" class="tab active" data-page="letters">Letters</button>
+      <button type="button" class="tab" data-page="words">Words</button>
+    </nav>
+
     <button type="button" id="countdown-button" aria-label="start countdown">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -39,54 +45,87 @@
         />
       </svg>
     </button>
-    <p id="countdown"></p>
-    <button type="button" id="buchstabe">Go</button>
-    <p id="used"></p>
+
+    <!-- Letters Page -->
+    <div id="letters-page" class="page active">
+      <p id="countdown"></p>
+      <button type="button" id="buchstabe">Go</button>
+      <p id="used"></p>
+    </div>
+
+    <!-- Words Page -->
+    <div id="words-page" class="page">
+      <p id="countdown-words"></p>
+      <button type="button" id="word-button">Go</button>
+      <p id="used-words"></p>
+    </div>
 
     <aside id="menu">
       <form>
-        <label for="countdown-timer">Countdown in seconds</label>
-        <p class="buttons">
-          <button type="button" class="countdown">0</button>
-          <button type="button" class="countdown">30</button>
-          <button type="button" class="countdown">60</button>
-          <button type="button" class="countdown">90</button>
-        </p>
+        <!-- Letters Settings -->
+        <div id="letters-settings" class="settings-section active">
+          <label for="countdown-timer">Countdown in seconds</label>
+          <p class="buttons">
+            <button type="button" class="countdown">0</button>
+            <button type="button" class="countdown">30</button>
+            <button type="button" class="countdown">60</button>
+            <button type="button" class="countdown">90</button>
+          </p>
 
-        <label for="skip-letters">Skip the following letters</label>
-        <p class="buttons">
-          <button type="button" class="letter">A</button>
-          <button type="button" class="letter">B</button>
-          <button type="button" class="letter">C</button>
-          <button type="button" class="letter">D</button>
-          <button type="button" class="letter">E</button>
-          <button type="button" class="letter">F</button>
-          <button type="button" class="letter">G</button>
-          <button type="button" class="letter">H</button>
-          <button type="button" class="letter">I</button>
-          <button type="button" class="letter">J</button>
-          <button type="button" class="letter">K</button>
-          <button type="button" class="letter">L</button>
-          <button type="button" class="letter">M</button>
-          <button type="button" class="letter">N</button>
-          <button type="button" class="letter">O</button>
-          <button type="button" class="letter">P</button>
-          <button type="button" class="letter">Q</button>
-          <button type="button" class="letter">R</button>
-          <button type="button" class="letter">S</button>
-          <button type="button" class="letter">T</button>
-          <button type="button" class="letter">U</button>
-          <button type="button" class="letter">V</button>
-          <button type="button" class="letter">W</button>
-          <button type="button" class="letter">X</button>
-          <button type="button" class="letter">Y</button>
-          <button type="button" class="letter">Z</button>
-        </p>
+          <label for="skip-letters">Skip the following letters</label>
+          <p class="buttons">
+            <button type="button" class="letter">A</button>
+            <button type="button" class="letter">B</button>
+            <button type="button" class="letter">C</button>
+            <button type="button" class="letter">D</button>
+            <button type="button" class="letter">E</button>
+            <button type="button" class="letter">F</button>
+            <button type="button" class="letter">G</button>
+            <button type="button" class="letter">H</button>
+            <button type="button" class="letter">I</button>
+            <button type="button" class="letter">J</button>
+            <button type="button" class="letter">K</button>
+            <button type="button" class="letter">L</button>
+            <button type="button" class="letter">M</button>
+            <button type="button" class="letter">N</button>
+            <button type="button" class="letter">O</button>
+            <button type="button" class="letter">P</button>
+            <button type="button" class="letter">Q</button>
+            <button type="button" class="letter">R</button>
+            <button type="button" class="letter">S</button>
+            <button type="button" class="letter">T</button>
+            <button type="button" class="letter">U</button>
+            <button type="button" class="letter">V</button>
+            <button type="button" class="letter">W</button>
+            <button type="button" class="letter">X</button>
+            <button type="button" class="letter">Y</button>
+            <button type="button" class="letter">Z</button>
+          </p>
 
-        <label for="reset">Reset</label>
-        <p class="buttons">
-          <button type="button" id="reset">Reset game</button>
-        </p>
+          <label for="reset">Reset</label>
+          <p class="buttons">
+            <button type="button" id="reset">Reset game</button>
+          </p>
+        </div>
+
+        <!-- Words Settings -->
+        <div id="words-settings" class="settings-section">
+          <label for="countdown-timer-words">Countdown in seconds</label>
+          <p class="buttons">
+            <button type="button" class="countdown-words">0</button>
+            <button type="button" class="countdown-words">30</button>
+            <button type="button" class="countdown-words">60</button>
+            <button type="button" class="countdown-words">90</button>
+          </p>
+
+          <label for="word-list">Words/Names (one per line)</label>
+          <textarea id="word-list" rows="10" placeholder="Enter words or names, one per line"></textarea>
+
+          <label for="reset-words">Reset</label>
+          <p class="buttons">
+            <button type="button" id="reset-words">Reset game</button>
+          </p>
+        </div>
       </form>
     </aside>
     <script type="text/javascript" src="stadt-land-fluss.js"></script>

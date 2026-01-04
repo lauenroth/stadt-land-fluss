@@ -5,23 +5,12 @@ const ANIMATION_LETTERS = ['A', 'U', 'S', 'T', 'F', 'K', 'N', '0', 'D', 'L', 'M'
 const STORAGE_KEYS = {
   USED_LETTERS: 'usedLetters',
   EXCLUDED_LETTERS: 'excludedLetters',
-  TIMER: 'timer'
+  TIMER: 'timer',
+  USED_WORDS: 'usedWords',
+  WORD_LIST: 'wordList',
+  TIMER_WORDS: 'timerWords',
+  ACTIVE_PAGE: 'activePage'
 };
-
-// DOM elements - cached to avoid repeated queries
-const elements = {
-  buchstabe: document.getElementById('buchstabe'),
-  countdown: document.getElementById('countdown'),
-  countdownButton: document.getElementById('countdown-button'),
-  used: document.getElementById('used'),
-  menuButton: document.getElementById('toggle-menu'),
-  menu: document.getElementById('menu'),
-  resetButton: document.getElementById('reset'),
-  form: document.querySelector('form')
-};
-
-// State
-let countdownInterval = null;
 
 // Helper functions for localStorage operations
 const storage = {
@@ -36,6 +25,32 @@ const storage = {
     localStorage.removeItem(key);
   }
 };
+
+// DOM elements - cached to avoid repeated queries
+const elements = {
+  buchstabe: document.getElementById('buchstabe'),
+  countdown: document.getElementById('countdown'),
+  countdownButton: document.getElementById('countdown-button'),
+  used: document.getElementById('used'),
+  menuButton: document.getElementById('toggle-menu'),
+  menu: document.getElementById('menu'),
+  resetButton: document.getElementById('reset'),
+  form: document.querySelector('form'),
+  wordButton: document.getElementById('word-button'),
+  countdownWords: document.getElementById('countdown-words'),
+  usedWords: document.getElementById('used-words'),
+  wordList: document.getElementById('word-list'),
+  resetWordsButton: document.getElementById('reset-words'),
+  tabs: document.querySelectorAll('.tab'),
+  lettersPage: document.getElementById('letters-page'),
+  wordsPage: document.getElementById('words-page'),
+  lettersSettings: document.getElementById('letters-settings'),
+  wordsSettings: document.getElementById('words-settings')
+};
+
+// State
+let countdownInterval = null;
+let currentPage = storage.get(STORAGE_KEYS.ACTIVE_PAGE, 'letters');
 
 // Fisher-Yates shuffle with modern syntax
 const shuffle = (array) => {
@@ -132,6 +147,124 @@ const selectLetter = () => {
   }, ANIMATION_TIME);
 };
 
+const resetWords = () => {
+  elements.wordButton.classList.remove('started');
+  storage.remove(STORAGE_KEYS.USED_WORDS);
+  elements.usedWords.innerHTML = '';
+  elements.wordButton.innerHTML = 'Go';
+  clearCountdown();
+};
+
+const animateWord = (targetWord) => {
+  let startTimestamp = null;
+  const words = getWordList();
+  
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    
+    const progress = Math.min((timestamp - startTimestamp) / ANIMATION_TIME, 1);
+    const wordIndex = Math.floor(Math.random() * words.length);
+    elements.wordButton.innerHTML = words[wordIndex] || targetWord;
+
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      elements.wordButton.innerHTML = targetWord;
+    }
+  };
+  
+  requestAnimationFrame(step);
+};
+
+const getWordList = () => {
+  const wordListText = storage.get(STORAGE_KEYS.WORD_LIST, '');
+  return wordListText
+    .split('\n')
+    .map(word => word.trim())
+    .filter(word => word.length > 0);
+};
+
+const startCountdownWords = () => {
+  const timerValue = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
+  clearCountdown();
+  
+  let timeRemaining = parseInt(timerValue, 10);
+  elements.countdownWords.innerHTML = timeRemaining;
+
+  countdownInterval = setInterval(() => {
+    timeRemaining--;
+    elements.countdownWords.innerHTML = timeRemaining;
+
+    if (timeRemaining <= 0) {
+      clearCountdown();
+      elements.countdownWords.innerHTML = "Time's up!";
+    }
+  }, 1000);
+};
+
+const selectWord = () => {
+  const words = getWordList();
+  
+  if (words.length === 0) {
+    alert('Please add words/names in the settings first.');
+    return;
+  }
+
+  elements.wordButton.classList.add('started');
+  clearCountdown();
+  
+  const usedWords = storage.get(STORAGE_KEYS.USED_WORDS, []);
+  const availableWords = words.filter(word => !usedWords.includes(word));
+
+  if (availableWords.length === 0) {
+    resetWords();
+    return;
+  }
+
+  const shuffledWords = shuffle(availableWords);
+  const nextWord = shuffledWords[0];
+  
+  animateWord(nextWord);
+
+  usedWords.push(nextWord);
+  storage.set(STORAGE_KEYS.USED_WORDS, usedWords);
+
+  setTimeout(() => {
+    elements.usedWords.innerHTML = usedWords.join(' • ');
+    
+    const timerValue = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
+    elements.countdownButton.style.opacity = timerValue !== '0' ? '1' : '0';
+  }, ANIMATION_TIME);
+};
+
+const switchPage = (page) => {
+  currentPage = page;
+  storage.set(STORAGE_KEYS.ACTIVE_PAGE, page);
+  
+  // Update tabs
+  elements.tabs.forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.page === page);
+  });
+  
+  // Update pages
+  elements.lettersPage.classList.toggle('active', page === 'letters');
+  elements.wordsPage.classList.toggle('active', page === 'words');
+  
+  // Update settings
+  elements.lettersSettings.classList.toggle('active', page === 'letters');
+  elements.wordsSettings.classList.toggle('active', page === 'words');
+  
+  // Update countdown button visibility
+  clearCountdown();
+  if (page === 'letters') {
+    const timerValue = storage.get(STORAGE_KEYS.TIMER, '0');
+    elements.countdownButton.style.opacity = elements.buchstabe.classList.contains('started') && timerValue !== '0' ? '1' : '0';
+  } else {
+    const timerValue = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
+    elements.countdownButton.style.opacity = elements.wordButton.classList.contains('started') && timerValue !== '0' ? '1' : '0';
+  }
+};
+
 // Initialize
 elements.form.onclick = (event) => event.stopPropagation();
 
@@ -140,6 +273,12 @@ elements.resetButton.onclick = () => {
   document.body.classList.remove('show-menu');
 };
 
+elements.resetWordsButton.onclick = () => {
+  resetWords();
+  document.body.classList.remove('show-menu');
+};
+
+// Timer buttons
 const selectedTimer = storage.get(STORAGE_KEYS.TIMER, '0');
 document.querySelectorAll('.countdown').forEach(button => {
   const timerValue = button.innerHTML;
@@ -157,30 +296,47 @@ document.querySelectorAll('.countdown').forEach(button => {
   };
 });
 
-const excludedLetters = storage.get(STORAGE_KEYS.EXCLUDED_LETTERS, []);
-document.querySelectorAll('.letter').forEach(button => {
-  const letter = button.innerHTML;
+// Word timer buttons
+const selectedTimerWords = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
+document.querySelectorAll('.countdown-words').forEach(button => {
+  const timerValue = button.innerHTML;
   
-  if (excludedLetters.includes(letter)) {
-    button.classList.add('disabled');
+  if (timerValue === selectedTimerWords) {
+    button.classList.add('active');
   }
 
   button.onclick = () => {
-    button.classList.toggle('disabled');
-    
-    const index = excludedLetters.indexOf(letter);
-    if (index === -1) {
-      excludedLetters.push(letter);
-    } else {
-      excludedLetters.splice(index, 1);
-    }
-    
-    storage.set(STORAGE_KEYS.EXCLUDED_LETTERS, excludedLetters);
+    elements.countdownButton.style.opacity = timerValue === '0' ? '0' : '1';
+    document.querySelectorAll('.countdown-words').forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    storage.set(STORAGE_KEYS.TIMER_WORDS, timerValue);
+    clearCountdown();
   };
+});
+
+// Word list textarea
+elements.wordList.value = storage.get(STORAGE_KEYS.WORD_LIST, '');
+elements.wordList.oninput = () => {
+  storage.set(STORAGE_KEYS.WORD_LIST, elements.wordList.value);
+};
+
+// Tab navigation
+elements.tabs.forEach(tab => {
+  tab.onclick = () => switchPage(tab.dataset.page);
 });
 
 // Event listeners
 elements.buchstabe.onclick = selectLetter;
-elements.countdownButton.onclick = startCountdown;
 elements.menuButton.onclick = () => document.body.classList.add('show-menu');
 elements.menu.onclick = () => document.body.classList.remove('show-menu');
+elements.wordButton.onclick = selectWord;
+elements.countdownButton.onclick = () => {
+  if (currentPage === 'letters') {
+    startCountdown();
+  } else {
+    startCountdownWords();
+  }
+};
+
+// Initialize page on load
+switchPage(currentPage);

@@ -29,7 +29,7 @@ body {
   align-items: center;
   display: grid;
   gap: 15px;
-  grid-template-rows: auto 80px;
+  grid-template-rows: auto auto 80px;
   margin: 0;
   min-height: 100dvh;
   padding: 0;
@@ -67,6 +67,7 @@ button {
   top: 10px;
   height: 50px;
   width: 50px;
+  z-index: 10;
 }
 
 #countdown {
@@ -86,6 +87,27 @@ button {
 }
 #buchstabe.started {
   font-size: 200px;
+}
+
+#word-button {
+  height: calc(100dvh - 100px);
+  font-size: 60px;
+  font-weight: bold;
+  padding: 0 20px;
+  word-break: break-word;
+}
+#word-button.started {
+  font-size: 80px;
+}
+
+#countdown-words {
+  font-size: 60px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 100px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
 }
 
 #used {
@@ -172,4 +194,66 @@ aside button.disabled::after {
 label {
   display: flex;
   margin-bottom: 20px;
+}
+
+#tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 50px;
+  right: 50px;
+  z-index: 10;
+}
+
+.tab {
+  background-color: transparent;
+  border: 2px solid var(--color-border);
+  border-radius: 20px;
+  color: var(--color-blueish-white);
+  font-size: 16px;
+  padding: 8px 20px;
+  transition: all 0.25s;
+}
+
+.tab.active {
+  background-color: var(--color-digital-blue);
+  border-color: var(--color-digital-blue);
+}
+
+.page {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.page.active {
+  display: flex;
+}
+
+.settings-section {
+  display: none;
+}
+
+.settings-section.active {
+  display: block;
+}
+
+#word-list {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-blueish-white);
+  font-size: 16px;
+  margin: 0 0 40px;
+  padding: 10px;
+  width: 100%;
+}
+
+#word-list::placeholder {
+  color: rgba(237, 240, 251, 0.5);
 }
