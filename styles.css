@@ -58,7 +58,21 @@ button {
 }
 
 #countdown-button.show {
-  display: block;
+  opacity: 1;
+}
+
+#reset-words-button {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  height: 50px;
+  opacity: 0;
+  transition: opacity .25s;
+  width: 50px;
+}
+
+#reset-words-button.show {
+  opacity: 1;
 }
 
 #toggle-menu {
@@ -98,16 +112,6 @@ button {
 }
 #word-button.started {
   font-size: 80px;
-}
-
-#countdown-words {
-  font-size: 60px;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 100px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -2px;
 }
 
 #used {

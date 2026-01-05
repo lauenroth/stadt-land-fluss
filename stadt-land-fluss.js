@@ -8,7 +8,6 @@ const STORAGE_KEYS = {
   TIMER: 'timer',
   USED_WORDS: 'usedWords',
   WORD_LIST: 'wordList',
-  TIMER_WORDS: 'timerWords',
   ACTIVE_PAGE: 'activePage'
 };
 
@@ -31,16 +30,16 @@ const elements = {
   buchstabe: document.getElementById('buchstabe'),
   countdown: document.getElementById('countdown'),
   countdownButton: document.getElementById('countdown-button'),
+  resetWordsButton: document.getElementById('reset-words-button'),
   used: document.getElementById('used'),
   menuButton: document.getElementById('toggle-menu'),
   menu: document.getElementById('menu'),
   resetButton: document.getElementById('reset'),
   form: document.querySelector('form'),
   wordButton: document.getElementById('word-button'),
-  countdownWords: document.getElementById('countdown-words'),
   usedWords: document.getElementById('used-words'),
   wordList: document.getElementById('word-list'),
-  resetWordsButton: document.getElementById('reset-words'),
+  resetWordsSettingsButton: document.getElementById('reset-words'),
   tabs: document.querySelectorAll('.tab'),
   lettersPage: document.getElementById('letters-page'),
   wordsPage: document.getElementById('words-page'),
@@ -152,7 +151,7 @@ const resetWords = () => {
   storage.remove(STORAGE_KEYS.USED_WORDS);
   elements.usedWords.innerHTML = '';
   elements.wordButton.innerHTML = 'Go';
-  clearCountdown();
+  elements.resetWordsButton.classList.remove('show');
 };
 
 const animateWord = (targetWord) => {
@@ -184,24 +183,6 @@ const getWordList = () => {
     .filter(word => word.length > 0);
 };
 
-const startCountdownWords = () => {
-  const timerValue = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
-  clearCountdown();
-  
-  let timeRemaining = parseInt(timerValue, 10);
-  elements.countdownWords.innerHTML = timeRemaining;
-
-  countdownInterval = setInterval(() => {
-    timeRemaining--;
-    elements.countdownWords.innerHTML = timeRemaining;
-
-    if (timeRemaining <= 0) {
-      clearCountdown();
-      elements.countdownWords.innerHTML = "Time's up!";
-    }
-  }, 1000);
-};
-
 const selectWord = () => {
   const words = getWordList();
   
@@ -211,7 +192,6 @@ const selectWord = () => {
   }
 
   elements.wordButton.classList.add('started');
-  clearCountdown();
   
   const usedWords = storage.get(STORAGE_KEYS.USED_WORDS, []);
   const availableWords = words.filter(word => !usedWords.includes(word));
@@ -231,9 +211,7 @@ const selectWord = () => {
 
   setTimeout(() => {
     elements.usedWords.innerHTML = usedWords.join(' • ');
-    
-    const timerValue = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
-    elements.countdownButton.style.opacity = timerValue !== '0' ? '1' : '0';
+    elements.resetWordsButton.classList.add('show');
   }, ANIMATION_TIME);
 };
 
@@ -254,14 +232,19 @@ const switchPage = (page) => {
   elements.lettersSettings.classList.toggle('active', page === 'letters');
   elements.wordsSettings.classList.toggle('active', page === 'words');
   
-  // Update countdown button visibility
+  // Update button visibility
   clearCountdown();
   if (page === 'letters') {
     const timerValue = storage.get(STORAGE_KEYS.TIMER, '0');
     elements.countdownButton.style.opacity = elements.buchstabe.classList.contains('started') && timerValue !== '0' ? '1' : '0';
+    elements.resetWordsButton.classList.remove('show');
   } else {
-    const timerValue = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
-    elements.countdownButton.style.opacity = elements.wordButton.classList.contains('started') && timerValue !== '0' ? '1' : '0';
+    elements.countdownButton.style.opacity = '0';
+    if (elements.wordButton.classList.contains('started')) {
+      elements.resetWordsButton.classList.add('show');
+    } else {
+      elements.resetWordsButton.classList.remove('show');
+    }
   }
 };
 
@@ -273,9 +256,13 @@ elements.resetButton.onclick = () => {
   document.body.classList.remove('show-menu');
 };
 
-elements.resetWordsButton.onclick = () => {
+elements.resetWordsSettingsButton.onclick = () => {
   resetWords();
   document.body.classList.remove('show-menu');
+};
+
+elements.resetWordsButton.onclick = () => {
+  resetWords();
 };
 
 // Timer buttons
@@ -296,24 +283,6 @@ document.querySelectorAll('.countdown').forEach(button => {
   };
 });
 
-// Word timer buttons
-const selectedTimerWords = storage.get(STORAGE_KEYS.TIMER_WORDS, '0');
-document.querySelectorAll('.countdown-words').forEach(button => {
-  const timerValue = button.innerHTML;
-  
-  if (timerValue === selectedTimerWords) {
-    button.classList.add('active');
-  }
-
-  button.onclick = () => {
-    elements.countdownButton.style.opacity = timerValue === '0' ? '0' : '1';
-    document.querySelectorAll('.countdown-words').forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-    storage.set(STORAGE_KEYS.TIMER_WORDS, timerValue);
-    clearCountdown();
-  };
-});
-
 // Word list textarea
 elements.wordList.value = storage.get(STORAGE_KEYS.WORD_LIST, '');
 elements.wordList.oninput = () => {
@@ -330,13 +299,32 @@ elements.buchstabe.onclick = selectLetter;
 elements.menuButton.onclick = () => document.body.classList.add('show-menu');
 elements.menu.onclick = () => document.body.classList.remove('show-menu');
 elements.wordButton.onclick = selectWord;
-elements.countdownButton.onclick = () => {
-  if (currentPage === 'letters') {
-    startCountdown();
-  } else {
-    startCountdownWords();
+elements.countdownButton.onclick = startCountdown;
+
+// Letter buttons
+const excludedLetters = storage.get(STORAGE_KEYS.EXCLUDED_LETTERS, []);
+document.querySelectorAll('.letter').forEach(button => {
+  const letter = button.innerHTML;
+  
+  if (excludedLetters.includes(letter)) {
+    button.classList.add('disabled');
   }
-};
+
+  button.onclick = () => {
+    const isExcluded = excludedLetters.includes(letter);
+    
+    if (isExcluded) {
+      const index = excludedLetters.indexOf(letter);
+      excludedLetters.splice(index, 1);
+      button.classList.remove('disabled');
+    } else {
+      excludedLetters.push(letter);
+      button.classList.add('disabled');
+    }
+    
+    storage.set(STORAGE_KEYS.EXCLUDED_LETTERS, excludedLetters);
+  };
+});
 
 // Initialize page on load
 switchPage(currentPage);
